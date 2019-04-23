@@ -56,7 +56,7 @@ class yololoss(nn.Module):
         noo_mask_pred = noo_mask.unsqueeze(-1).expand_as(pred_tensor)
         """
         coo_pred = pred_tensor[coo_mask]#.view(-1, 20)
-        assert coo_pred.size()[1] == 20
+        assert coo_pred.size()[1] == 21
         box_pred = coo_pred[:, :10].contiguous().view(-1, 5)
         class_pred = coo_pred[:, 10:]
 
@@ -143,7 +143,7 @@ if __name__ =='__main__':
     # pred_tensor = torch.randn(7,7,20)
     a,b,c,d=1,2,3,4
     y = yololoss(a,b,c,d)
-    pred_tensor = torch.rand(1,7,7,20)
-    target_tensor = torch.rand(1,7,7,6)
+    pred_tensor = torch.rand(1,28,28,21)
+    target_tensor = torch.rand(1,28,28,6)
     rst=y(pred_tensor,target_tensor)
     print(rst)

@@ -21,11 +21,11 @@ resnet = models.resnet50(pretrained=True)
 new_state_dict = resnet.state_dict()
 dd = net.state_dict()
 for k in new_state_dict.keys():
-    print(k)
-    if k in dd.keys() and not k.startswith('fc'):
+    #print(k)
+    if k in dd.keys() and not k.startswith('fc') and not k.startswith('layer4'):
         #print('yes')
         dd[k] = new_state_dict[k]
-    net.load_state_dict(dd)
+net.load_state_dict(dd)
 
 criterian = yololoss(S, B, l_coord, l_noobj)
 optimizer = torch.optim.SGD(net.parameters(), lr=learning_rate, momentum=0.9, weight_decay=5e-4)
@@ -63,7 +63,7 @@ for epoch in range(num_epoch):
     draw_loss.append(total_loss / (i + 1))
    
     if epoch % 2 == 0:
-        torch.save(net.state_dict(), 'model_{}.ckpt'.format(epoch))
+        torch.save(net.state_dict(), '/Users/zhangqi/Documents/DLHW/SVhn/model_{}.ckpt'.format(epoch))
 
         validation_loss = 0.0
         
@@ -85,18 +85,9 @@ for epoch in range(num_epoch):
         if best_test_loss > validation_loss:
             best_test_loss = validation_loss
             print('get best test loss %.5f' % best_test_loss)
-            torch.save(net.state_dict(), 'best.pth')
+            torch.save(net.state_dict(), '/Users/zhangqi/Documents/DLHW/SVhn/best.pth')
         
 with open('draw_loss.json','w') as f:
     json.dump(draw_loss,f)
 with open('draw_loss_valid.json','w') as f:
     json.dump(draw_loss_valid,f)
-'''
-net.eval()
-for i,(img,target) in enumerate(test_loader):
-    correct = 0
-    total = 0
-    img = Variable(img)
-    target = target.to(device)
-    output = net(img)
-'''

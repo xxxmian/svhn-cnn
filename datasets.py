@@ -7,8 +7,8 @@ import torchvision.transforms as transforms
 
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-data_path = '/home/xxxfrank/zqHomework/train'
-test_data_path = '/home/xxxfrank/zqHomework/test'
+data_path = '/Users/zhangqi/Documents/DLHW/SVhn/train'
+test_data_path = '/Users/zhangqi/Documents/DLHW/SVhn/test'
 datamass_path = 'datamass.json'
 datamass_test_path = 'datamass_test.json'
 
@@ -35,24 +35,22 @@ class MyDataSets(data.Dataset):
         
         image = Image.open(os.path.join(self.data_path, self.train_img[item]+'.png'))
         label = self.train_label[item]
-        tempTensor = torch.LongTensor(7, 7, 6)
+        tempTensor = torch.LongTensor(28, 28, 6)
         tempTensor.zero_()
-        max_d = 448
-        min_d = 0
+
         for j in range(len(label)):
             label[j][2] += (448 - image.size[0]) / 2
             label[j][3] += (448 - image.size[1]) / 2
-            max_d
-            row = int(label[j][2] // 64)
-            line = int(label[j][3] // 64)
+            row = int(label[j][2] // 16)
+            line = int(label[j][3] // 16)
             if row<0:
                 row = 0
-            if row >=7:
-                row =6
+            if row >27:
+                row =27
             if line <0:
                 line = 0
-            if line >= 7:
-                line = 6
+            if line > 27:
+                line = 27
             tempTensor[row][line][0] = label[j][2]
             tempTensor[row][line][1] = label[j][3]
             tempTensor[row][line][2] = label[j][4]
