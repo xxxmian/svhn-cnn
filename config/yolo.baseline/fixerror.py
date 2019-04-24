@@ -28,7 +28,7 @@ while True:
         break
     t_row = t_sorted_idx[t_i] // 28
     t_line = t_sorted_idx[t_i] % 28
-    t_r = target[ t_row, t_line, 5]
+    t_r = target[t_row, t_line, 5]
     t_rst.append(t_r.item())
     t_i += 1
 print(t_rst)

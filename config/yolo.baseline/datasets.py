@@ -5,6 +5,8 @@ from PIL import Image
 import torch.utils.data as data
 import torchvision.transforms as transforms
 
+LOGIT_SIZE=(28, 28, 6)
+IMG_SIZE=(448, 448)
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 data_path = '/home/xxxfrank/zqHomework/train'
@@ -24,22 +26,29 @@ class MyDataSets(data.Dataset):
                 continue
             self.train_img.append(str(i+1))
             self.train_label.append(train_labelset[i])
+        #self.train_img = self.train_img[:20]
+        #self.train_label = self.train_label[:20]
         self.trans = transforms.Compose(
             [
-                transforms.CenterCrop(448),
+                transforms.Resize(IMG_SIZE),
                 transforms.ToTensor()
             ]
         )
         
     def __getitem__(self, item):
-        
         image = Image.open(os.path.join(self.data_path, self.train_img[item]+'.png'))
         label = self.train_label[item]
-        tempTensor = torch.zeros(28, 28, 6)
-
+        tempTensor = torch.zeros(LOGIT_SIZE)
+        
         for j in range(len(label)):
-            label[j][2] += (448 - image.size[0]) / 2
-            label[j][3] += (448 - image.size[1]) / 2
+            #label[j][2] += (448 - image.size[0]) / 2
+            #label[j][3] += (448 - image.size[1]) / 2
+            rate_x = float(IMG_SIZE[0])/image.size[0]
+            rate_y = float(IMG_SIZE[0])/image.size[1]
+            label[j][2] *= rate_x
+            label[j][3] *= rate_y
+            label[j][4] *= rate_x
+            label[j][0] *= rate_y
             row = int(label[j][2] // 16)
             line = int(label[j][3] // 16)
             if row<0:
@@ -50,12 +59,12 @@ class MyDataSets(data.Dataset):
                 line = 0
             if line > 27:
                 line = 27
-            tempTensor[row][line][0] = label[j][2]
-            tempTensor[row][line][1] = label[j][3]
-            tempTensor[row][line][2] = label[j][4]
-            tempTensor[row][line][3] = label[j][0]
-            tempTensor[row][line][4] = 1
-            tempTensor[row][line][5] = label[j][1]
+            tempTensor[row][line][0] = label[j][2]#left
+            tempTensor[row][line][1] = label[j][3]#top
+            tempTensor[row][line][2] = label[j][4]#width
+            tempTensor[row][line][3] = label[j][0]#height
+            tempTensor[row][line][4] = 1 #confidence
+            tempTensor[row][line][5] = label[j][1]#label
         image = self.trans(image)
         return image, tempTensor
 
@@ -65,7 +74,7 @@ class MyDataSets(data.Dataset):
 
 
 train_data = MyDataSets(data_path, datamass_path)
-train_loader = data.DataLoader(train_data, batch_size=5, shuffle=True)
+train_loader = data.DataLoader(train_data, batch_size=24, shuffle=True)
 test_data = MyDataSets(test_data_path, datamass_test_path)
 test_loader = data.DataLoader(test_data, batch_size=1, shuffle=False)
 #print(train_img[0].shape)

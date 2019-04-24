@@ -111,9 +111,9 @@ class yololoss(nn.Module):
             box_target_iou[i, torch.LongTensor([4])] = max_iou
         box_target_iou = Variable(box_target_iou)
         coo_response_mask_target = coo_response_mask_target.expand_as(box_target_iou)
-        box_response_target_iou = box_target_iou[coo_response_mask_target].view(-1, 5)
+        box_response_target_iou = box_target_iou[coo_response_mask_target].view(-1, 5).to(device)
         coo_response_mask = coo_response_mask.expand_as(box_pred)
-        box_response_pred = box_pred[coo_response_mask].view(-1, 5)
+        box_response_pred = box_pred[coo_response_mask].view(-1, 5).to(device)
 
         # response loss
         contain_loss = F.mse_loss(box_response_pred[:, 4], box_response_target_iou[:, 4], size_average=False)
@@ -143,7 +143,9 @@ if __name__ =='__main__':
     # pred_tensor = torch.randn(7,7,20)
     a,b,c,d=1,2,3,4
     y = yololoss(a,b,c,d)
-    pred_tensor = torch.rand(1,28,28,21)
-    target_tensor = torch.rand(1,28,28,6)
+    pred_tensor = torch.rand(1,28,28,21).to(device)
+    target_tensor = torch.Tensor(pred_tensor)
+    # target_tensor = torch.zeros(1,28,28,6).to(device)
+    # target_tensor[:,:,:2,4] = 1
     rst=y(pred_tensor,target_tensor)
     print(rst)

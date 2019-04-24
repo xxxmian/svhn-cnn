@@ -132,12 +132,12 @@ class ResNet(nn.Module):
         self.layer1 = self._make_layer(block, 64, layers[0])
         self.layer2 = self._make_layer(block, 128, layers[1], stride=2)
         self.layer3 = self._make_layer(block, 256, layers[2], stride=2)
-        self.layer4 = self._make_layer(block, 512, layers[3], stride=2)
+        # self.layer4 = self._make_layer(block, 512, layers[3], stride=2)
         # self.layer5 = self._make_layer(block, 512, layers[3], stride=2)
-        self.layer5 = self._make_detnet_layer(in_channels=2048)
-        self.avgpool = nn.AvgPool2d(2) #fit 448 input size
+        self.dil_layer = self._make_detnet_layer(in_channels=1024)
+        # self.avgpool = nn.AvgPool2d(2) #fit 448 input size
         # self.fc = nn.Linear(512 * block.expansion, num_classes)
-        self.conv_end = nn.Conv2d(1024, 21, kernel_size=3, stride=1, padding=1, bias=False)
+        self.conv_end = nn.Conv2d(256, 21, kernel_size=3, stride=1, padding=1, bias=False)
         self.bn_end = nn.BatchNorm2d(21)
         for m in self.modules():
             if isinstance(m, nn.Conv2d):
@@ -180,6 +180,7 @@ class ResNet(nn.Module):
         x = self.layer1(x) # 1,256,112,112
         x = self.layer2(x) # 1,512,56,56
         x = self.layer3(x) # 1,1024,28,28
+        x = self.dil_layer(x)
         # x = self.avgpool(x)
         # x = x.view(x.size(0), -1)
         # x = self.fc(x)
@@ -203,7 +204,7 @@ def resnet50(pretrained=False, **kwargs):
     """
     model = ResNet(Bottleneck, [3, 4, 6, 3], **kwargs)
     if pretrained:
-        model.load_state_dict(model_zoo.load_url(model_urls))
+        model.load_state_dict(model_zoo.load_url(model_urls), strict=False)
     return model
 
 

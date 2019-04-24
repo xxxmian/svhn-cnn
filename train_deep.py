@@ -1,7 +1,7 @@
 import torch
 from torch.autograd import Variable
 from datasets import train_loader, test_loader
-from network import resnet50
+from network_deep import resnet50
 from yololoss import yololoss
 from torchvision import models
 import numpy as np

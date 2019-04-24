@@ -5,13 +5,10 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
+  <component name="PackageRequirementsSettings">
+    <option name="requirementsPath" value="" />
+  </component>
   <component name="TestRunnerService">
-<<<<<<< HEAD
-    <option name="projectConfiguration" value="py.test" />
-    <option name="PROJECT_TEST_RUNNER" value="py.test" />
-=======
-    <option name="projectConfiguration" value="pytest" />
-    <option name="PROJECT_TEST_RUNNER" value="pytest" />
->>>>>>> 999e464ed9c9434c57c2550f5f7a53c05ff97954
+    <option name="PROJECT_TEST_RUNNER" value="Unittests" />
   </component>
 </module>

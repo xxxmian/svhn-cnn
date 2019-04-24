@@ -137,7 +137,10 @@ class ResNet(nn.Module):
         self.layer5 = self._make_detnet_layer(in_channels=2048)
         self.avgpool = nn.AvgPool2d(2) #fit 448 input size
         # self.fc = nn.Linear(512 * block.expansion, num_classes)
-        self.conv_end = nn.Conv2d(1024, 21, kernel_size=3, stride=1, padding=1, bias=False)
+        # 256 after layer5, 1024 after layer3
+        
+        # self.conv_end = nn.Conv2d(1024, 21, kernel_size=3, stride=1, padding=1, bias=False)
+        self.conv_end = nn.Conv2d(256, 21, kernel_size=3, stride=1, padding=1, bias=False)
         self.bn_end = nn.BatchNorm2d(21)
         for m in self.modules():
             if isinstance(m, nn.Conv2d):
@@ -180,6 +183,8 @@ class ResNet(nn.Module):
         x = self.layer1(x) # 1,256,112,112
         x = self.layer2(x) # 1,512,56,56
         x = self.layer3(x) # 1,1024,28,28
+        x = self.layer4(x)
+        x = self.layer5(x)
         # x = self.avgpool(x)
         # x = x.view(x.size(0), -1)
         # x = self.fc(x)
